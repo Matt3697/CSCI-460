@@ -47,31 +47,34 @@ public class Family_name_1 {
 		//at any processor to run. When the job sequence is finished, measure the overall turn-around time. I.e the time duration 
 		//between the arrival of the first job and the finish of the last job.
 		//Test your program on randomly generated job sequences of 100 which arrive every 1ms.
-		int i = 0; 
-		int j = 0;
-		int y = 0;
+		int i = 0;   //used to add jobs based on arrival time
+		int j = 0;   //used to add jobs to processor "j"
+		int y = 0;   //used to get jobs
 		int processor_num = 0;
+		int tat = 0; //turn around time
+		
 		while(y < jobs.size()){
-			
 			System.out.println("System Time at iteration " + i + ":" + system_time);
 			if(jobs.get(y).get_arrival_time() == i) { //at a jobs arrival time	
-				System.out.println("Job# " + jobs.get(y).getJobNum() + ":" + jobs.get(y).get_processing_time());
+				System.out.println("Job# " + jobs.get(y).getJobNum() + " with processing time: " +jobs.get(y).get_processing_time());
 				if(j == 0) {									   //put the first job on processor 0
 					processors.get(j).onLoad_job(jobs.get(y));
 				}
-				else {	
-					System.out.println("using the else: " + jobs.get(y).getJobNum());//otherwise put jobs on processor (j+1)%k
+				else {										   //otherwise put jobs on processor (j+1)%k
 					processor_num = (j + 1) % k;
 					processors.get(processor_num).onLoad_job(jobs.get(y));
 				}
+				System.out.println("added job " + jobs.get(y).getJobNum() + " to processor " + processors.get(processor_num).get_id());
 				system_time += jobs.get(y).get_processing_time(); //add processing time to total system time.
+				system_time++; //assume that it takes 1ms to put each job at any processor. i.e add 1ms
 				j++;
 				y++;
 			}
-			system_time++; //assume that it takes 1ms to put each job at any processor. i.e add 1ms
 			i++;
 		}
+		tat = system_time - jobs.get(0).get_arrival_time();
 		System.out.println("Total System Time = " + system_time + "ms");
+		System.out.println("Overall turnaround time: " + tat +"ms");
 		
 		PrintWriter writer = new PrintWriter("Family_name1.txt", "UTF-8");
 		writer.println("The first line");
