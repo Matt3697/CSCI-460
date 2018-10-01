@@ -15,11 +15,14 @@ public class Family_name_1 {
 			circularProcedure(randomJobs(), tats1); //process 100 randomly generated jobs
 		}
 		int min = get_min(tats1); //results for circular procedure
-		int max = get_max(tats1);
+		int max = get_max(tats1); 
 		double average = get_average(tats1);
 		double standard_deviation = get_standard_deviation(average, tats1);
 		
-		
+		myMethod(inputFileJob(), tats2);
+		for(int i = 0; i < 100; i++) {
+			myMethod(randomJobs(), tats2); //process 100 randomly generated jobs
+		}
 		int min2 = get_min(tats2); //results for my method
 		int max2 = get_max(tats2);
 		double average2 = get_average(tats2);
@@ -39,7 +42,8 @@ public class Family_name_1 {
 		}
 		return randomJobs_array;
 	}
-	public static ArrayList<Job> inputFileJob(){ //creates jobs from input.txt
+	
+	public static ArrayList<Job> inputFileJob(){ //helper method creates jobs from input.txt
 		Scanner scanner = null;
 		ArrayList<Integer> input = new ArrayList<Integer>();	//holds data from input.txt in the form of Job# | Arrival_Time | Processing_Time
 		ArrayList<Job> jobs = new ArrayList<Job>();			//holds individual jobs from input.
@@ -65,48 +69,45 @@ public class Family_name_1 {
         }
         return jobs;
 	}
+	
 	public static void circularProcedure(ArrayList<Job> jobs, ArrayList<Integer> tats) {
-		ArrayList<Processor> processors = new ArrayList<Processor>(); //holds individual processors.
+		ArrayList<Processor> processors = create_processors(); //holds individual processors.
 		int std_no = 8788;			//last four of student id.
 		int k = (std_no%3) + 2;		//number of processors to emulate.
 		
-		for(int i = 0; i < k; i++) {	//create k processors.
-			Processor processor = new Processor(i);
-			processors.add(processor);
-		}
-		
 		int system_time = 0;	//Variable to keep track of system time in milliseconds.
-		 	int i = 0;   //used to add jobs based on arrival time
-			int j = 0;   //used to add jobs to processor "j"
-			int y = 0;   //used to get jobs
-			int processor_num = 0;
-			int tat = 0; //turn around time
+	 	int i = 0;   //used to add jobs based on arrival time
+		int j = 0;   //used to add jobs to processor "j"
+		int y = 0;   //used to get jobs
+		int processor_num = 0;
+		int tat = 0; //turn around time
 			
-			while(y < jobs.size()){
-				//System.out.println("System Time at iteration " + i + ":" + system_time);
-				if(jobs.get(y).get_arrival_time() == i) { //at a jobs arrival time	
-					//System.out.println("Job# " + jobs.get(y).getJobNum() + " with processing time: " +jobs.get(y).get_processing_time());
-					if(j == 0) {									   //put the first job on processor 0
-						processors.get(j).onLoad_job(jobs.get(y));
-					}
-					else {										   //otherwise put jobs on processor (j+1)%k
-						processor_num = (j + 1) % k;
-						processors.get(processor_num).onLoad_job(jobs.get(y));
-					}
-					//System.out.println("added job " + jobs.get(y).getJobNum() + " to processor " + processors.get(processor_num).get_id());
-					system_time += jobs.get(y).get_processing_time(); //add processing time to total system time.
-					system_time++; //assume that it takes 1ms to put each job at any processor. i.e add 1ms
-					j++;
-					y++;
+		while(y < jobs.size()){
+			if(jobs.get(y).get_arrival_time() == i) { //at a jobs arrival time	
+				if(j == 0) {									   //put the first job on processor 0
+					processors.get(j).onLoad_job(jobs.get(y));
 				}
-				i++;
+				else {										   //otherwise put jobs on processor (j+1)%k
+					processor_num = (j + 1) % k;
+					processors.get(processor_num).onLoad_job(jobs.get(y));
+				}
+				system_time += jobs.get(y).get_processing_time(); //add processing time to total system time.
+				system_time++; //assume that it takes 1ms to put each job at any processor. i.e add 1ms
+				j++;
+				y++;
 			}
-			tat = system_time - jobs.get(0).get_arrival_time();
-			tats.add(tat);
-			System.out.println("Total System Time = " + system_time + "ms");
-			System.out.println("Overall turnaround time: " + tat +"ms");
+			i++;
+		}
+		tat = system_time - jobs.get(0).get_arrival_time();
+		tats.add(tat);
+		System.out.println("Total System Time = " + system_time + "ms");
+		System.out.println("Overall turnaround time: " + tat +"ms");
 	}
 	
+	public static void myMethod(ArrayList<Job> jobs, ArrayList<Integer> tats) {
+		ArrayList<Processor> processors = create_processors();
+		
+	}
 	public static int get_min(ArrayList<Integer> tats) { //compute the smallest value in the tats array.
 		int min = tats.get(0);
 		for(int i = 1; i < tats.size() - 1; i++) {
@@ -116,6 +117,7 @@ public class Family_name_1 {
 		}
 		return min;
 	}
+	
 	public static int get_max(ArrayList<Integer> tats) { //compute the largest value in the tats array
 		int max = tats.get(0);
 		for(int i = 1; i < tats.size() - 1; i++) {
@@ -125,6 +127,7 @@ public class Family_name_1 {
 		}
 		return max;
 	}
+	
 	public static double get_average(ArrayList<Integer> tats) { //compute the average of all values in the tats array
 		double average = 0;
 		for(int i = 0; i < tats.size(); i++) {
@@ -132,8 +135,8 @@ public class Family_name_1 {
 		}
 		average = average / tats.size();
 		return average;
-		
 	}
+	
 	public static double get_standard_deviation(double average, ArrayList<Integer> tats) { //compute the standard deviation of the values in the tats array.
 		double standard_deviation = 0;
 		double newAverage = 0;
@@ -147,6 +150,18 @@ public class Family_name_1 {
 		newAverage = newAverage / temp.length;
 		standard_deviation = Math.sqrt(newAverage);
 		return standard_deviation;
+	}
+	
+	public static ArrayList<Processor> create_processors(){ //helper method to create processors.
+		ArrayList<Processor> processors = new ArrayList<Processor>(); //holds individual processors.
+		int std_no = 8788;			//last four of student id.
+		int k = (std_no%3) + 2;		//number of processors to emulate.
+		
+		for(int i = 0; i < k; i++) {	//create k processors.
+			Processor processor = new Processor(i);
+			processors.add(processor);
+		}
+		return processors;
 	}
 	public static void printResults(String methodName, int min, int max, double average, double standard_deviation) throws FileNotFoundException, UnsupportedEncodingException {
 		PrintWriter writer = new PrintWriter("Family_name1.txt", "UTF-8");
