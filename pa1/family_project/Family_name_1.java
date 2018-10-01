@@ -44,11 +44,12 @@ public class Family_name_1 {
 		
 	}
 	public static ArrayList<Job> randomJobs() {	//helper method to create 100 random jobs.
-		int random1 = (int) (Math.random() * 499) + 1; //random number between 1 and 500
+		
 		for(int i = 1; i <= 100; i++) {
+			int random1 = (int) (Math.random() * 499) + 1; //random number between 1 and 500
+			System.out.println(i + ":" + random1);
 			Job newJob = new Job(i, i, random1);
     			randomJobs_array.add(newJob);
-    			i += 2;
 		}
 		return randomJobs_array;
 	}
