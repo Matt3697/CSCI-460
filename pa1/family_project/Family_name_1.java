@@ -8,7 +8,9 @@ public class Family_name_1 {
 	public static void main(String[] args) throws IOException {
 	    
 		Scanner scanner = null;
+		int time = 0;
 		ArrayList<Integer> input = new ArrayList<Integer>();	//holds data from input.txt
+		ArrayList<Job> jobs = new ArrayList<Job>();
 		int std_no = 8788;									//last four of student id.
 		int k = (std_no%3) + 2;								//number of processors to emulate.
 		for(int i = 0; i < k; i++) {							//create the k processors.
@@ -27,11 +29,15 @@ public class Family_name_1 {
         while(scanner.hasNextInt()){
             input.add(scanner.nextInt()); 
         }
-        /*int x = 0;
-        while(x < input.size()) {
-        		System.out.println(input.get(x));
-        		x++;
-        }*/
+        
+        int x = 0;
+        //MODIFY TO USE ARRIVAL TIME FIRST!!!!!!!!!!!!!!!!
+        while(x < input.size()) {	//create new jobs using input and add them to jobs list.
+        		Job newJob = new Job(input.get(x), input.get(x + 1), input.get(x + 2));
+        		jobs.add(newJob);
+        		x += 3;
+        }
+        int i = 0;
 		//Write a circular procedure to run the job sequence in an on-line fashion. Once a job "i" arrives you need to,
 		//according to the order it arrives, put it on the processor (j+1)%k and run it immediately. Here j is the processor where job 
 		// i- 1 was run, and initially j= 0, i.e the first job is run on processor 0. You can assume that it takes 1ms to put each job
