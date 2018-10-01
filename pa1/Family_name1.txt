@@ -1,2 +1,4 @@
-The first line
-The second li
+Minimum Turn-around Time: 21617
+Max Turn-around Time: 28449
+Average Turn-around Time: 25448.65
+Standard Deviation of Turn-around Time: 1373.5779801307237
