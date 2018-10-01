@@ -4,9 +4,42 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Family_name_1 {	
-	static ArrayList<Integer> tats = new ArrayList<Integer>();
+
 	public static void main(String[] args) throws IOException {
-	    
+		ArrayList<Integer> tats1 = new ArrayList<Integer>(); //List of Turn-around times. used for circularProcedure with random jobs.
+		ArrayList<Integer> tats2 = new ArrayList<Integer>(); //List of Turn-around times. used for circularProcedure with random jobs.
+		
+        circularProcedure(inputFileJob(), tats1); 		//process jobs from input.txt
+        
+        for(int i = 0; i < 100; i++) {
+			circularProcedure(randomJobs(), tats1); //process 100 randomly generated jobs
+		}
+		int min = get_min(tats1); //results for circular procedure
+		int max = get_max(tats1);
+		double average = get_average(tats1);
+		double standard_deviation = get_standard_deviation(average, tats1);
+		
+		
+		int min2 = get_min(tats2); //results for my method
+		int max2 = get_max(tats2);
+		double average2 = get_average(tats2);
+		double standard_deviation2 = get_standard_deviation(average2, tats2);
+		
+        printResults("Circular", min, max, average, standard_deviation);
+        printResults("My method", min2, max2, average2, standard_deviation2);
+		
+	}
+	
+	public static ArrayList<Job> randomJobs() {	//helper method to create 100 random jobs.
+		ArrayList<Job> randomJobs_array = new ArrayList<Job>();
+		for(int i = 1; i <= 100; i++) {
+			int random = (int) (Math.random() * 499) + 1; //random number between 1 and 500
+			Job newJob = new Job(i, i, random);
+    			randomJobs_array.add(newJob);
+		}
+		return randomJobs_array;
+	}
+	public static ArrayList<Job> inputFileJob(){ //creates jobs from input.txt
 		Scanner scanner = null;
 		ArrayList<Integer> input = new ArrayList<Integer>();	//holds data from input.txt in the form of Job# | Arrival_Time | Processing_Time
 		ArrayList<Job> jobs = new ArrayList<Job>();			//holds individual jobs from input.
@@ -30,36 +63,9 @@ public class Family_name_1 {
         		jobs.add(newJob);
         		x += 3;
         }
-		//Write a circular procedure to run the job sequence in an on-line fashion. Once a job "i" arrives you need to,
-		//according to the order it arrives, put it on the processor (j+1)%k and run it immediately. Here j is the processor where job 
-		// i- 1 was run, and initially j= 0, i.e the first job is run on processor 0. You can assume that it takes 1ms to put each job
-		//at any processor to run. When the job sequence is finished, measure the overall turn-around time. I.e the time duration 
-		//between the arrival of the first job and the finish of the last job.
-		//Test your program on randomly generated job sequences of 100 which arrive every 1ms.
-		
-        //circularProcedure(jobs); 		//process jobs from input.txt
-        for(int i = 0; i < 100; i++) {
-			circularProcedure(randomJobs()); //process 100 randomly generated jobs
-		}
-		int min = get_min();
-		int max = get_max();
-		double average = get_average();
-		double standard_deviation = get_standard_deviation(average);
-		
-        printResults(min, max, average, standard_deviation);
-		
+        return jobs;
 	}
-	public static ArrayList<Job> randomJobs() {	//helper method to create 100 random jobs.
-		ArrayList<Job> randomJobs_array = new ArrayList<Job>();
-		for(int i = 1; i <= 100; i++) {
-			int random = (int) (Math.random() * 499) + 1; //random number between 1 and 500
-			Job newJob = new Job(i, i, random);
-    			randomJobs_array.add(newJob);
-		}
-		return randomJobs_array;
-	}
-	
-	public static void circularProcedure(ArrayList<Job> jobs) {
+	public static void circularProcedure(ArrayList<Job> jobs, ArrayList<Integer> tats) {
 		ArrayList<Processor> processors = new ArrayList<Processor>(); //holds individual processors.
 		int std_no = 8788;			//last four of student id.
 		int k = (std_no%3) + 2;		//number of processors to emulate.
@@ -101,7 +107,7 @@ public class Family_name_1 {
 			System.out.println("Overall turnaround time: " + tat +"ms");
 	}
 	
-	public static int get_min() { //compute the smallest value in the tats array.
+	public static int get_min(ArrayList<Integer> tats) { //compute the smallest value in the tats array.
 		int min = tats.get(0);
 		for(int i = 1; i < tats.size() - 1; i++) {
 			if(tats.get(i) < min) {
@@ -110,7 +116,7 @@ public class Family_name_1 {
 		}
 		return min;
 	}
-	public static int get_max() { //compute the largest value in the tats array
+	public static int get_max(ArrayList<Integer> tats) { //compute the largest value in the tats array
 		int max = tats.get(0);
 		for(int i = 1; i < tats.size() - 1; i++) {
 			if(tats.get(i) > max) {
@@ -119,7 +125,7 @@ public class Family_name_1 {
 		}
 		return max;
 	}
-	public static double get_average() { //compute the average of all values in the tats array
+	public static double get_average(ArrayList<Integer> tats) { //compute the average of all values in the tats array
 		double average = 0;
 		for(int i = 0; i < tats.size(); i++) {
 			average += tats.get(i);
@@ -128,7 +134,7 @@ public class Family_name_1 {
 		return average;
 		
 	}
-	public static double get_standard_deviation(double average) { //compute the standard deviation of the values in the tats array.
+	public static double get_standard_deviation(double average, ArrayList<Integer> tats) { //compute the standard deviation of the values in the tats array.
 		double standard_deviation = 0;
 		double newAverage = 0;
 		double[] temp = new double[tats.size()];
@@ -142,12 +148,14 @@ public class Family_name_1 {
 		standard_deviation = Math.sqrt(newAverage);
 		return standard_deviation;
 	}
-	public static void printResults(int min, int max, double average, double standard_deviation) throws FileNotFoundException, UnsupportedEncodingException {
+	public static void printResults(String methodName, int min, int max, double average, double standard_deviation) throws FileNotFoundException, UnsupportedEncodingException {
 		PrintWriter writer = new PrintWriter("Family_name1.txt", "UTF-8");
+		writer.println("Results using the :" + methodName);
 		writer.println("Minimum Turn-around Time: " + min);
 		writer.println("Max Turn-around Time: " + max);
 		writer.println("Average Turn-around Time: "+ average);
 		writer.println("Standard Deviation of Turn-around Time: " + standard_deviation);
+		writer.println();
 		writer.close();
 	}
 }
