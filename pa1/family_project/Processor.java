@@ -15,4 +15,8 @@ public class Processor {
 	public void add_job(String job) {	//adds a job to the list of jobs on the processor.
 		jobs.add(job);
 	}
+	
+	public void onLoad_job(Job job) {
+		
+	}
 }
