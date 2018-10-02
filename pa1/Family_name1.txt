@@ -1,11 +1,24 @@
-Results using the Circular Method:
-Minimum Turn-around Time: 881
-Max Turn-around Time: 28187
-Average Turn-around Time: 24655.49504950495
-Standard Deviation of Turn-around Time: 2748.002956689729
+Results using the: Circular Method 100 Random Jobs
+Minimum Turn-around Time: 21728
+Max Turn-around Time: 28147
+Average Turn-around Time: 24865.57
+Standard Deviation of Turn-around Time: 1324.6199323202109
 
-Results using the Shortest Job Next method:
+Results using the: Shortest Job Next 100 Random Jobs
+Minimum Turn-around Time: 1179
+Max Turn-around Time: 26890
+Average Turn-around Time: 17241.75
+Standard Deviation of Turn-around Time: 7383.213808870769
+
+Results using the: Circular Method from Input.txt
+Minimum Turn-around Time: 881
+Max Turn-around Time: 881
+Average Turn-around Time: 881.0
+Standard Deviation of Turn-around Time: 0.0
+
+Results using the: Shortest Job Next from Input.txt
 Minimum Turn-around Time: 90
-Max Turn-around Time: 26810
-Average Turn-around Time: 16050.445544554455
-Standard Deviation of Turn-around Time: 8286.803362564293
+Max Turn-around Time: 90
+Average Turn-around Time: 90.0
+Standard Deviation of Turn-around Time: 0.0
+

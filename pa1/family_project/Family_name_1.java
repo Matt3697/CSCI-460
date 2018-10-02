@@ -12,9 +12,11 @@ public class Family_name_1 {
 	public static void main(String[] args) throws IOException {
 		ArrayList<Integer> tats1 = new ArrayList<Integer>(); //List of Turn-around times. used for circularProcedure with random jobs.
 		ArrayList<Integer> tats2 = new ArrayList<Integer>(); //List of Turn-around times. used for circularProcedure with random jobs.
+		ArrayList<Integer> tats3 = new ArrayList<Integer>();
+		ArrayList<Integer> tats4 = new ArrayList<Integer>();
 		ArrayList<Job> inputFileJobs = get_inputFileJobArray();			//holds individual jobs from input.
         
-		circularProcedure(inputFileJobs, tats1);
+		circularProcedure(inputFileJobs, tats3);
         for(int i = 0; i < 100; i++) {
 			circularProcedure(randomJobs(), tats1); //process 100 randomly generated jobs
 		}
@@ -23,7 +25,7 @@ public class Family_name_1 {
 		average = get_average(tats1);
 		standard_deviation = get_standard_deviation(average, tats1);
 		
-		SJN(inputFileJobs, tats2); //results for shortes job next procedure
+		SJN(inputFileJobs, tats4); //results for shortes job next procedure
 		for(int i = 0; i < 100; i++) {
 			SJN(randomJobs(), tats2); //process 100 randomly generated jobs
 		}
@@ -31,7 +33,21 @@ public class Family_name_1 {
 		max2 = get_max(tats2);
 		average2 = get_average(tats2);
 		standard_deviation2 = get_standard_deviation(average2, tats2);
-        printResults();		
+		int min3 = get_min(tats3);
+		int max3 = get_max(tats3);
+		double average3 = get_average(tats3);
+		double standard_deviation3 = get_standard_deviation(average3, tats3);
+		int min4 = get_min(tats4);
+		int max4 = get_max(tats4);
+		double average4 = get_average(tats4);
+		double standard_deviation4 = get_standard_deviation(average4, tats4);
+		
+		PrintWriter writer = new PrintWriter("Family_name1.txt", "UTF-8");
+		printResults(writer, "Circular Method 100 Random Jobs", min, max, average, standard_deviation);	
+		printResults(writer, "Shortest Job Next 100 Random Jobs", min2, max2, average2, standard_deviation2);
+		printResults(writer, "Circular Method from Input.txt", min3, max3, average3, standard_deviation3);	
+		printResults(writer, "Shortest Job Next from Input.txt", min4, max4, average4, standard_deviation4);
+		writer.close();
 	}
 	
 	public static ArrayList<Job> randomJobs() {	//helper method to create 100 random jobs.
@@ -112,7 +128,6 @@ public class Family_name_1 {
 		int k = (std_no%3) + 2;		//number of processors to emulate.
 		int y = 0;
 		int j = 0;
-		int i = 0;
 		int initialArrivalTime = 0;
 		int processor_num = 0;
 		HashMap<Job, Integer> completed = new HashMap<Job, Integer>();
@@ -136,7 +151,6 @@ public class Family_name_1 {
 			system_time++; //assume that it takes 1ms to put each job at any processor. i.e add 1ms
 			j++;
 			y++;
-			i++;
 		}
 		int tat = system_time - initialArrivalTime;
 		tats.add(tat);
@@ -199,19 +213,12 @@ public class Family_name_1 {
 		}
 		return processors;
 	}
-	public static void printResults() throws FileNotFoundException, UnsupportedEncodingException {
-		PrintWriter writer = new PrintWriter("Family_name1.txt", "UTF-8");
-		writer.println("Results using the Circular Method:");
+	public static void printResults(PrintWriter writer, String methodName, int min, int max, double average, double standard_deviation) throws FileNotFoundException, UnsupportedEncodingException {
+		writer.println("Results using the: " + methodName);
 		writer.println("Minimum Turn-around Time: " + min);
 		writer.println("Max Turn-around Time: " + max);
 		writer.println("Average Turn-around Time: "+ average);
 		writer.println("Standard Deviation of Turn-around Time: " + standard_deviation);
 		writer.println();
-		writer.println("Results using the Shortest Job Next method:");
-		writer.println("Minimum Turn-around Time: " + min2);
-		writer.println("Max Turn-around Time: " + max2);
-		writer.println("Average Turn-around Time: "+ average2);
-		writer.println("Standard Deviation of Turn-around Time: " + standard_deviation2);
-		writer.close();
 	}
 }
