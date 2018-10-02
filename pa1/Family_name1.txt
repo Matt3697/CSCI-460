@@ -1,4 +1,11 @@
-Minimum Turn-around Time: 21617
-Max Turn-around Time: 28449
-Average Turn-around Time: 25448.65
-Standard Deviation of Turn-around Time: 1373.5779801307237
+Results using the Circular Method:
+Minimum Turn-around Time: 881
+Max Turn-around Time: 28587
+Average Turn-around Time: 25246.9900990099
+Standard Deviation of Turn-around Time: 2843.995448099884
+
+Results using the Shortest Job Next method:
+Minimum Turn-around Time: 21
+Max Turn-around Time: 2149
+Average Turn-around Time: 536.7227722772277
+Standard Deviation of Turn-around Time: 489.26678055098967
