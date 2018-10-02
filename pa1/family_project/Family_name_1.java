@@ -1,6 +1,8 @@
 package family_project;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Scanner;
 
 public class Family_name_1 {	
@@ -113,13 +115,15 @@ public class Family_name_1 {
 		int i = 0;
 		int initialArrivalTime = 0;
 		int processor_num = 0;
-		Job nextShortestJob = jobs.get(0);//holds the shortest next job
+		HashMap<Job, Integer> completed = new HashMap<Job, Integer>();
 		while(y < jobs.size()){
+			Job nextShortestJob = jobs.get(0);//holds the shortest next job
 			for(int x = 1; x < jobs.size() - 1; x++) {//finds the shortest next job.
-				if(jobs.get(x).get_processing_time() < nextShortestJob.get_processing_time()) {
+				if(jobs.get(x).get_processing_time() < nextShortestJob.get_processing_time() && !completed.containsKey(jobs.get(x))) {
 					nextShortestJob = jobs.get(x);
 				}
 			}
+			completed.put(nextShortestJob, y);
 			if(j == 0) {	//put the first job on processor 0
 				processors.get(j).onLoad_job(nextShortestJob);
 				initialArrivalTime = nextShortestJob.get_arrival_time();
