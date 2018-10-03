@@ -92,7 +92,6 @@ public class Family_name_1 {
 		ArrayList<Processor> processors = create_processors(); //holds individual processors.
 		int std_no = 8788;			//last four of student id.
 		int k = (std_no%3) + 2;		//number of processors to emulate.
-		
 		int system_time = 0;	//Variable to keep track of system time in milliseconds.
 	 	int i = 0;   //used to add jobs based on arrival time
 		int j = 0;   //used to add jobs to processor "j"
@@ -118,8 +117,6 @@ public class Family_name_1 {
 		}
 		tat = system_time - jobs.get(0).get_arrival_time();
 		tats.add(tat);
-		System.out.println("Total System Time = " + system_time + "ms");
-		System.out.println("Overall turnaround time: " + tat +"ms");
 	}
 	
 	public static void SJN(ArrayList<Job> jobs, ArrayList<Integer> tats) {
@@ -131,32 +128,35 @@ public class Family_name_1 {
 		int j = 0;
 		int initialArrivalTime = 0;
 		int processor_num = 0;
+		int maxtime = 500;
 		HashMap<Job, Integer> completed = new HashMap<Job, Integer>();
+		int n = jobs.size(); 
+        for (int i = 0; i < n-1; i++) { //sort the jobs from smallest processing time to largest processing time.
+            for (int x = 0; x < n-i-1; x++) {
+                if (jobs.get(j).get_processing_time() > jobs.get(j+1).get_processing_time()) 
+                { 
+                    Job temp = jobs.get(j); 
+                    jobs.set(j, jobs.get(j+1));
+                    jobs.set(j+1, temp);
+                } 
+            }
+        }
 		while(y < jobs.size()){
-			Job nextShortestJob = jobs.get(0);//holds the shortest next job
-			for(int x = 1; x < jobs.size() - 1; x++) {//finds the shortest next job.
-				if(jobs.get(x).get_processing_time() < nextShortestJob.get_processing_time() && !completed.containsKey(jobs.get(x))) {
-					nextShortestJob = jobs.get(x);
-				}
-			}
-			completed.put(nextShortestJob, y);
 			if(j == 0) {	//put the first job on processor 0
-				processors.get(j).onLoad_job(nextShortestJob);
-				initialArrivalTime = nextShortestJob.get_arrival_time();
+				processors.get(j).onLoad_job(jobs.get(y));
+				initialArrivalTime = jobs.get(y).get_arrival_time();
 			}
 			else { //otherwise put jobs on processor (j+1)%k
 				processor_num = (j + 1) % k;
-				processors.get(processor_num).onLoad_job(nextShortestJob);
+				processors.get(processor_num).onLoad_job(jobs.get(y));
 			}
-			system_time += nextShortestJob.get_processing_time(); //add processing time to total system time.
+			system_time += jobs.get(y).get_processing_time(); //add processing time to total system time.
 			system_time++; //assume that it takes 1ms to put each job at any processor. i.e add 1ms
 			j++;
 			y++;
 		}
 		int tat = system_time - initialArrivalTime;
 		tats.add(tat);
-		System.out.println("Total System Time = " + system_time + "ms");
-		System.out.println("Overall turnaround time: " + tat +"ms");
 	}
 
 	public static int get_min(ArrayList<Integer> tats) { //compute the smallest value in the tats array.
