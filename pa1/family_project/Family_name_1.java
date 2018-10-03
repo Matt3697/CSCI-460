@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Scanner;
-
+/*
+ * Author: Matthew Sagen
+ * Date: 10/02/2018
+ * To run this program, simply compile/run this java class. The output of the program will be written in Family_name1.txt.
+ */
 public class Family_name_1 {	
 	
 	public static void main(String[] args) throws IOException {
