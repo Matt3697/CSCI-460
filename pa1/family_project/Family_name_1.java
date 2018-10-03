@@ -6,33 +6,30 @@ import java.util.Hashtable;
 import java.util.Scanner;
 
 public class Family_name_1 {	
-	public static int min,max,min2,max2;
-	public static double average,standard_deviation,average2,standard_deviation2;
 	
 	public static void main(String[] args) throws IOException {
-		ArrayList<Integer> tats1 = new ArrayList<Integer>(); //List of Turn-around times. used for circularProcedure with random jobs.
-		ArrayList<Integer> tats2 = new ArrayList<Integer>(); //List of Turn-around times. used for circularProcedure with random jobs.
-		ArrayList<Integer> tats3 = new ArrayList<Integer>();
-		ArrayList<Integer> tats4 = new ArrayList<Integer>();
-		ArrayList<Job> inputFileJobs = get_inputFileJobArray();			//holds individual jobs from input.
+		ArrayList<Integer> tats1 = new ArrayList<Integer>();   //List of Turn-around times. used for circularProcedure with random jobs.
+		ArrayList<Integer> tats2 = new ArrayList<Integer>();   //List of Turn-around times. used for SJN with random jobs.
+		ArrayList<Integer> tats3 = new ArrayList<Integer>();   //List of Turn-around times. used for circularProcedure with text file input jobs.
+		ArrayList<Integer> tats4 = new ArrayList<Integer>();   //List of Turn-around times. used for SJN with text file input jobs.
+		ArrayList<Job> inputFileJobs = get_inputFileJobArray();//holds individual jobs from text file input.
         
 		circularProcedure(inputFileJobs, tats3);
+		SJN(inputFileJobs, tats4); //results for shortest job next procedure
         for(int i = 0; i < 100; i++) {
-			circularProcedure(randomJobs(), tats1); //process 100 randomly generated jobs
+    			ArrayList<Job> randomJobs_array = randomJobs();
+			circularProcedure(randomJobs_array, tats1); //process 100 randomly generated jobs
+			SJN(randomJobs_array, tats2);
 		}
-		min = get_min(tats1); //results for circular procedure
-		max = get_max(tats1); 
-		average = get_average(tats1);
-		standard_deviation = get_standard_deviation(average, tats1);
-		
-		SJN(inputFileJobs, tats4); //results for shortes job next procedure
-		for(int i = 0; i < 100; i++) {
-			SJN(randomJobs(), tats2); //process 100 randomly generated jobs
-		}
-		min2 = get_min(tats2); //results for my method
-		max2 = get_max(tats2);
-		average2 = get_average(tats2);
-		standard_deviation2 = get_standard_deviation(average2, tats2);
+        
+        int min = get_min(tats1); //results for circular procedure
+		int max = get_max(tats1); 
+		double average = get_average(tats1);
+		double standard_deviation = get_standard_deviation(average, tats1);
+		int min2 = get_min(tats2); //results for SJN
+		int max2 = get_max(tats2);
+		double average2 = get_average(tats2);
+		double standard_deviation2 = get_standard_deviation(average2, tats2);
 		int min3 = get_min(tats3);
 		int max3 = get_max(tats3);
 		double average3 = get_average(tats3);
