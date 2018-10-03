@@ -141,7 +141,7 @@ public class Family_name_1 {
                 } 
             }
         }
-		while(y < jobs.size()){
+		while(y < jobs.size()){//loop through the jobs array and add the processing times to get the total system time.
 			if(j == 0) {	//put the first job on processor 0
 				processors.get(j).onLoad_job(jobs.get(y));
 				initialArrivalTime = jobs.get(y).get_arrival_time();
