@@ -6,8 +6,8 @@ CSCI-460: Programming Assignment 2
 '''
 import random
 import threading
-from queue import Queue
-import time
+
+
 class Node(object):
 
     def __init__(self, randomNum, prev, next):
@@ -56,10 +56,10 @@ class DoublyLinkedList(object):
 
             curNode = curNode.next
 
-    def show(self):
+    def show(self, name):
         curNode = self.head
         while curNode is not None:
-            print (curNode.randomNum)
+            print (name, '->', curNode.randomNum)
             curNode = curNode.next
         print ("*"*50)
 
@@ -73,48 +73,52 @@ class Producer(threading.Thread):
     def generateNode(self,randomNum):
         self.dblList.append(randomNum)
 
-    def generateMsg(self):
-        msg = "m"
+    def generateMsg(self,name):
+        msg = "Task completed:"
+        print(msg, name)
 
     def getNodeNum(self):
         return self.dblList.numNodes
 
-    def showList(self):
-        self.dblList.show()
+    def showList(self, name):
+        self.dblList.show(name)
 
     def run(self):
         #while(True):
         maxNodes = 30
         name = threading.currentThread().getName()
         var_lock = threading.Lock()
-        if(name == 'p1'):
-            i = self.getNodeNum()
-            with var_lock:
+        try:
+            var_lock.acquire()
+            if(name == 'p1'):
+                i = self.getNodeNum()
                 if(i < maxNodes):
                     print("Before p1:")
-                    self.showList()
+                    self.showList(name)
                     oddRandomNum = random.randrange(1, 49+1, 2)
                     self.generateNode(oddRandomNum)
                     print("After p1:")
-                    self.showList()
+                    self.showList(name)
                 else:
-                    self.generateMsg()
+                    self.generateMsg(name)
                     #break;
-        elif(name == 'p2'):
-            i = self.getNodeNum()
-            with var_lock:
+            elif(name == 'p2'):
+                i = self.getNodeNum()
                 if(i < maxNodes):
                     print("Before p2:")
-                    self.showList()
+                    self.showList(name)
+                    var_lock.acquire(True, 2)
                     evenRandomNum = random.randrange(0, 49+1, 2)
                     self.generateNode(evenRandomNum)
                     print("After p2:")
-                    self.showList()
-
+                    self.showList(name)
                 else:
-                    self.generateMsg()
+                    self.generateMsg(name)
                     #break;
-
+            var_lock.release()
+        except:
+            print(name, '-> Could not acquire Lock')
+            time.sleep(2)
 class Consumer(threading.Thread):
     def __init__(self, dblList, name):
         super(Consumer, self).__init__()
@@ -122,45 +126,51 @@ class Consumer(threading.Thread):
         self.name = name
 
     def deleteHead(self):
-        d.remove()
+        dblList.remove()
 
-    def generateMsg(self):
-        self.msg = "m"
+    def generateMsg(self, name):
+        msg = "Task completed:"
+        print(msg, name)
 
     def getNodeNum(self):
         return self.dblList.numNodes
 
-    def showList(self):
-        self.dblList.show()
+    def showList(self,name):
+        self.dblList.show(name)
 
     def run(self):
         #while(True):
         name = threading.currentThread().getName()
         var_lock = threading.Lock()
-        if(name == 'c1'):
-            with var_lock:
+        try:
+            var_lock.acquire()
+            if(name == 'c1'):
                 i = self.getNodeNum()
                 if(i > 0 and i % 2 != 0):
                     print("Before c1:")
-                    self.showList()
+                    self.showList(name)
                     self.deleteHead()
                     print("After c1:")
-                    self.showList()
+                    self.showList(name)
                 else:
-                    self.generateMsg()
+                    self.generateMsg(name)
                     #break;
-        elif(name == 'c2'):
-            with var_lock:
+            elif(name == 'c2'):
                 i = self.getNodeNum()
                 if(i > 0 and i % 2 == 0):
                     print("Before c2:")
-                    self.showList()
+                    self.showList(name)
                     self.deleteHead()
                     print("After c2:")
-                    self.showList()
+                    self.showList(name)
                 else:
-                    self.generateMsg()
+                    self.generateMsg(name)
                     #break;
+            var_lock.release()
+        except:
+            print(name, '-> Could not acquire Lock.')
+            time.sleep(2)
+
 
 class Main():
 
@@ -171,7 +181,7 @@ class Main():
          randomNum = random.randint(0,49)
          d.append(randomNum)
          i = i + 1
-     d.show()
+     d.show('Init')
      counter = 3
      p1 = Producer(d, name='p1')
      p2 = Producer(d, name='p2')
