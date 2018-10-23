@@ -6,7 +6,7 @@ CSCI-460: Programming Assignment 2
 '''
 import random
 import threading
-
+import time
 
 class Node(object):
 
@@ -20,48 +20,41 @@ class DoublyLinkedList(object):
 
     head = None
     tail = None
+    numNodes = None
 
-    def __init__(self, numNodes):
-        self.numNodes = numNodes
+    def __init__(self):
+        self.numNodes = 0
 
     def getNodeNum():
         return numNodes
 
     def append(self,randomNum):
-        numNodes = self.numNodes
         newNode = Node(randomNum, None, None)
         if self.head is None:
             self.head = self.tail = newNode
-            numNodes = numNodes + 1
+            self.numNodes = self.numNodes + 1
         else:
             newNode.prev = self.tail
             newNode.next = None
             self.tail.next = newNode
             self.tail = newNode
-            numNodes = numNodes + 1
+            self.numNodes = self.numNodes + 1
 
     def remove(self, nodeVal):
-        curNode = self.head
-
-        while curNode is not None:
-            if curNode.randomNum == nodeVal:
-                # if it's not the first element
-                if curNode.prev is not None:
-                    curNode.prev.next = curNode.next
-                    curNode.next.prev = curNode.prev
-                else:
-                    # otherwise we have no prev (it's None), head is the next one, and prev becomes None
-                    self.head = curNode.next
-                    curNode.next.prev = None
-
-            curNode = curNode.next
+        curNode = self.head      #get the head of the list
+        self.head = curNode.next #set the head of the list to the next node
+        curNod = None            #remove the old head from the list
+        
 
     def show(self, name):
         curNode = self.head
+        print_lock = threading.Lock()
+        print_lock.acquire(0)
         while curNode is not None:
             print (name, '->', curNode.randomNum)
             curNode = curNode.next
         print ("*"*50)
+        print_lock.release()
 
 class Producer(threading.Thread):
 
@@ -107,7 +100,6 @@ class Producer(threading.Thread):
                 if(i < maxNodes):
                     print("Before p2:")
                     self.showList(name)
-                    var_lock.acquire(True, 2)
                     evenRandomNum = random.randrange(0, 49+1, 2)
                     self.generateNode(evenRandomNum)
                     print("After p2:")
@@ -116,6 +108,7 @@ class Producer(threading.Thread):
                     self.generateMsg(name)
                     #break;
             var_lock.release()
+            time.sleep(2)
         except:
             print(name, '-> Could not acquire Lock')
             time.sleep(2)
@@ -125,8 +118,8 @@ class Consumer(threading.Thread):
         self.dblList = dblList
         self.name = name
 
-    def deleteHead(self):
-        dblList.remove()
+    def deleteHead(self, node):
+        self.dblList.remove(node)
 
     def generateMsg(self, name):
         msg = "Task completed:"
@@ -146,10 +139,15 @@ class Consumer(threading.Thread):
             var_lock.acquire()
             if(name == 'c1'):
                 i = self.getNodeNum()
+                print("I: ", i)
                 if(i > 0 and i % 2 != 0):
                     print("Before c1:")
                     self.showList(name)
-                    self.deleteHead()
+                    try:
+                        print("hi")
+                        self.deleteHead(0)
+                    except:
+                        print('uhoahoh')
                     print("After c1:")
                     self.showList(name)
                 else:
@@ -160,13 +158,17 @@ class Consumer(threading.Thread):
                 if(i > 0 and i % 2 == 0):
                     print("Before c2:")
                     self.showList(name)
-                    self.deleteHead()
+                    try:
+                        self.deleteHead(0)
+                    except:
+                        print('uhoahoh2')
                     print("After c2:")
                     self.showList(name)
                 else:
                     self.generateMsg(name)
                     #break;
             var_lock.release()
+            time.sleep(2)
         except:
             print(name, '-> Could not acquire Lock.')
             time.sleep(2)
@@ -175,7 +177,7 @@ class Consumer(threading.Thread):
 class Main():
 
     def main():
-     d = DoublyLinkedList(0)
+     d = DoublyLinkedList()
      #initialize list with three nodes with a random int between 0 and 50
      for i in range(3):
          randomNum = random.randint(0,49)
