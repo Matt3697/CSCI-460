@@ -74,7 +74,6 @@ class Producer(threading.Thread):
 
     def generateMsg(self,name,f):
         msg = "Buffer full. waiting... "
-        print(msg, name)
         f.write(msg+' '+name+'\n')
         f.write("*"*50+"\n")
 
@@ -88,7 +87,9 @@ class Producer(threading.Thread):
         bufferSize = 30
         name = threading.currentThread().getName()
         var_lock = threading.Lock()
-        while(True):
+        timeout = 15
+        self.timer = time.time()
+        while(time.time() - self.timer < timeout):#use a timeout to prevent endless loop
             try:
                 var_lock.acquire()#try to acquire a lock on the thread.
                 f = open("sagen_matthew_2.txt", "a")
@@ -114,7 +115,10 @@ class Producer(threading.Thread):
                 f.write("*"*50+"\n")
                 f.close()
                 time.sleep(2)
-
+        f = open("sagen_matthew_2.txt", "a")
+        f.write(name+" ended due to timeout.\n")
+        f.write("*"*50+"\n")
+        f.close()
 class Consumer(threading.Thread):
 #Consumer1: delete the first node with odd value from head of list. If the first node has an even value, then wait
 #Consumer2: delete the first node with even value from head of list. If the first node has an odd value, then wait
@@ -130,7 +134,6 @@ class Consumer(threading.Thread):
 
     def generateMsg(self, name,f):
         msg = "Buffer Empty, waiting... "
-        print(msg, name)
         f.write(msg+' '+name+'\n')
         f.write("*"*50+"\n")
 
@@ -143,15 +146,12 @@ class Consumer(threading.Thread):
     def run(self):
         name = threading.currentThread().getName()
         var_lock = threading.Lock()
-        while(True):
+        timeout = 15
+        self.timer = time.time()
+        while(time.time() - self.timer < timeout):#use a timeout to prevent endless loop
             try:
                 var_lock.acquire() #try to acquire a lock on the thread.
                 f = open("sagen_matthew_2.txt", "a")
-                #print(self.dblList.head.randomNum)
-                if(self.dblList.head == None):
-                    print("end.")
-                    f.write("Empty List. Stopping program.\n")
-                    f.write("*"*50+"\n")
 
                 if(name == 'c1'):
                     headVal = self.dblList.head.randomNum
@@ -163,7 +163,6 @@ class Consumer(threading.Thread):
                         f.write("After c1:\n")
                         self.showList(name,f) #print out list after changing it
                     elif(nodes > 0 and headVal % 2 == 0): #wait if the head's value is even
-                        print("wait")
                         f.write(name+" must wait.\n")
                         f.write("*"*50+"\n")
                     else:
@@ -179,7 +178,6 @@ class Consumer(threading.Thread):
                         f.write("After c2:\n")
                         self.showList(name,f) #show the list after altering it.
                     elif(nodes > 0 and headVal % 2 != 0): #wait if the heads value is odd
-                        #print("wait")
                         f.write(name+" must wait.\n")
                         f.write("*"*50+"\n")
                     else:
@@ -193,7 +191,10 @@ class Consumer(threading.Thread):
                 f.write("*"*50+"\n")
                 f.close()
                 time.sleep(2)
-
+        f = open("sagen_matthew_2.txt", "a")
+        f.write(name+" ended due to timeout.\n")
+        f.write("*"*50+"\n")
+        f.close()
 class Main():
 
     def main():
