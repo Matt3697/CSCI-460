@@ -84,50 +84,37 @@ class Producer(threading.Thread):
         self.dblList.show(name,f)
 
     def run(self):
-        maxNodes = 30
+        bufferSize = 30
         name = threading.currentThread().getName()
         var_lock = threading.Lock()
         while(True):
             try:
                 var_lock.acquire()#try to acquire a lock on the thread.
                 f = open("sagen_matthew_2.txt", "a")
-                if(name == 'p1'):
-                    i = self.getNodeNum()
-                    if(i < maxNodes):
-                        #print("Before p1:")
-                        f.write("Before p1:\n")
-                        self.showList(name,f)
-                        oddRandomNum = random.randrange(1, 49+1, 2)
-                        self.generateNode(oddRandomNum)
-                        #print("After p1:")
-                        f.write("After p1:\n")
-                        self.showList(name,f)
+                nodes = self.getNodeNum()
+                if(nodes < bufferSize): #if we haven't reached the max number of nodes...
+                    f.write("Before "+name+"\n")
+                    self.showList(name,f)
+                    if(name == 'p1'):
+                        randomNumber = random.randrange(1, 49+1, 2) #add an odd node to the list
+                    elif(name == 'p2'):
+                        randomNumber = random.randrange(0, 49+1, 2)
                     else:
-                        self.generateMsg(name,f)
-                        #sys.exit()
-                        #break;
-                elif(name == 'p2'):
-                    i = self.getNodeNum()
-                    if(i < maxNodes):
-                        #print("Before p2:")
-                        f.write("Before p2:\n")
-                        self.showList(name,f)
-                        evenRandomNum = random.randrange(0, 49+1, 2)
-                        self.generateNode(evenRandomNum)
-                        #print("After p2:")
-                        f.write("After p2:\n")
-                        self.showList(name,f)
-                    else:
-                        self.generateMsg(name,f)
+                        print("Error in class:Producer, method: run")
+                    self.generateNode(randomNumber)
+                    f.write("After "+name+"\n")
+                    self.showList(name,f)
+                else:
+                    self.generateMsg(name,f) #if the buffer is full, generate a message and wait
                 f.close()
                 var_lock.release()#release lock
                 time.sleep(2)
             except:
-                #print(name, '-> Could not acquire Lock')
                 f.write(name+': Could not acquire Lock.\n')
                 f.write("*"*50+"\n")
                 f.close()
                 time.sleep(2)
+
 class Consumer(threading.Thread):
 #Consumer1: delete the first node with odd value from head of list. If the first node has an even value, then wait
 #Consumer2: delete the first node with even value from head of list. If the first node has an odd value, then wait
@@ -159,28 +146,34 @@ class Consumer(threading.Thread):
             try:
                 var_lock.acquire() #try to acquire a lock on the thread.
                 f = open("sagen_matthew_2.txt", "a")
+                print(self.dblList.head.randomNum)
                 if(name == 'c1'):
-                    i = self.getNodeNum()
-                    if(i > 0 and i % 2 != 0):
+                    headVal = self.dblList.head.randomNum
+                    nodes = self.getNodeNum()
+                    if(nodes > 0 and headVal % 2 != 0): #delete head of list if it's value is odd
                         f.write("Before c1:\n")
-                        self.showList(name,f)
-                        self.deleteHead()
+                        self.showList(name,f) #print out list before changing it
+                        self.deleteHead()     #delete the head of the list
                         f.write("After c1:\n")
-                        self.showList(name,f)
+                        self.showList(name,f) #print out list after changing it
+                    elif(nodes > 0 and headVal % 2 == 0): #wait if the head's value is even
+                        print("wait")
                     else:
                         self.generateMsg(name,f)
-                        #sys.exit()
-                        #break;
+
                 elif(name == 'c2'):
-                    i = self.getNodeNum()
-                    if(i > 0 and i % 2 == 0):
+                    headVal = self.dblList.head.randomNum
+                    nodes = self.getNodeNum()
+                    if(nodes > 0 and headVal % 2 == 0): #delete head of list if it's value is even
                         f.write("Before c2:\n")
-                        self.showList(name,f)
-                        self.deleteHead()
+                        self.showList(name,f) #show the list before altering it
+                        self.deleteHead()     #delete the head of the list
                         f.write("After c2:\n")
-                        self.showList(name,f)
+                        self.showList(name,f) #show the list after altering it.
+                    elif(nodes > 0 and headVal % 2 != 0): #wait if the heads value is odd
+                        print("wait")
                     else:
-                        self.generateMsg(name,f)
+                        self.generateMsg(name,f) #generate a message if there are no node's left.
                         #sys.exit()
                 f.close()
                 var_lock.release() #release lock
