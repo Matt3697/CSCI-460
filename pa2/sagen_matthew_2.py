@@ -5,6 +5,8 @@ CSCI-460: Programming Assignment 2
 
 To run the program use: python3 sagen_matthew_2.py
 Output is written to:   sagen_matthew_2.txt
+If you would like to run the program longer than 15 seconds simply change the
+timeout variable to the desired time.
 
 '''
 import random
