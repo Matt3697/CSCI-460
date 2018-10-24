@@ -153,7 +153,7 @@ class Consumer(threading.Thread):
                     if(nodes > 0 and headVal % 2 != 0): #delete head of list if it's value is odd
                         f.write("Before c1:\n")
                         self.showList(name,f) #print out list before changing it
-                        self.deleteHead()     #delete the head of the list
+                        self.deleteHead(0)     #delete the head of the list
                         f.write("After c1:\n")
                         self.showList(name,f) #print out list after changing it
                     elif(nodes > 0 and headVal % 2 == 0): #wait if the head's value is even
@@ -167,7 +167,7 @@ class Consumer(threading.Thread):
                     if(nodes > 0 and headVal % 2 == 0): #delete head of list if it's value is even
                         f.write("Before c2:\n")
                         self.showList(name,f) #show the list before altering it
-                        self.deleteHead()     #delete the head of the list
+                        self.deleteHead(0)     #delete the head of the list
                         f.write("After c2:\n")
                         self.showList(name,f) #show the list after altering it.
                     elif(nodes > 0 and headVal % 2 != 0): #wait if the heads value is odd
