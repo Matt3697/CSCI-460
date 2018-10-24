@@ -2,13 +2,14 @@
 Author: Matthew Sagen
 Date: 10/21/18
 CSCI-460: Programming Assignment 2
-To run the program, use: python3 sagen_matthew_2.py
-Output is written to sagen_matthew_2.txt
+
+To run the program use: python3 sagen_matthew_2.py
+Output is written to:   sagen_matthew_2.txt
+
 '''
 import random
 import threading
 import time
-from numpy import savetxt
 
 class Node(object):
 
@@ -34,19 +35,18 @@ class DoublyLinkedList(object):
         newNode = Node(randomNum, None, None)
         if self.head is None:
             self.head = self.tail = newNode
-            self.numNodes = self.numNodes + 1
+            self.numNodes = self.numNodes + 1 #increment the number of nodes in the list
         else:
             newNode.prev = self.tail
             newNode.next = None
             self.tail.next = newNode
             self.tail = newNode
-            self.numNodes = self.numNodes + 1
+            self.numNodes = self.numNodes + 1 #increment the number of nodes in the list
 
-    def remove(self, nodeVal):
+    def removeHead(self, nodeVal):
         curNode = self.head      #get the head of the list
         self.head = curNode.next #set the head of the list to the next node
         curNod = None            #remove the old head from the list
-
 
     def show(self, name, f):
         curNode = self.head
@@ -60,6 +60,9 @@ class DoublyLinkedList(object):
         #f.close()
 
 class Producer(threading.Thread):
+ #Producer #1: generate a node, add to end of the linked list with odd random int
+ #Producer #2: generate a node, add to end of the linked list with even random int
+ #When the buffer is full, both should generate a message and wait.
 
     def __init__(self, dblList, name):
         super(Producer, self).__init__()
@@ -81,12 +84,12 @@ class Producer(threading.Thread):
         self.dblList.show(name,f)
 
     def run(self):
+        maxNodes = 30
+        name = threading.currentThread().getName()
+        var_lock = threading.Lock()
         while(True):
-            maxNodes = 30
-            name = threading.currentThread().getName()
-            var_lock = threading.Lock()
             try:
-                var_lock.acquire()
+                var_lock.acquire()#try to acquire a lock on the thread.
                 f = open("sagen_matthew_2.txt", "a")
                 if(name == 'p1'):
                     i = self.getNodeNum()
@@ -101,7 +104,7 @@ class Producer(threading.Thread):
                         self.showList(name,f)
                     else:
                         self.generateMsg(name,f)
-                        sys.exit()
+                        #sys.exit()
                         #break;
                 elif(name == 'p2'):
                     i = self.getNodeNum()
@@ -116,24 +119,27 @@ class Producer(threading.Thread):
                         self.showList(name,f)
                     else:
                         self.generateMsg(name,f)
-                        sys.exit()
-                        #break;
                 f.close()
-                var_lock.release()
+                var_lock.release()#release lock
                 time.sleep(2)
             except:
                 #print(name, '-> Could not acquire Lock')
                 f.write(name+': Could not acquire Lock.\n')
+                f.write("*"*50+"\n")
                 f.close()
                 time.sleep(2)
 class Consumer(threading.Thread):
+#Consumer1: delete the first node with odd value from head of list. If the first node has an even value, then wait
+#Consumer2: delete the first node with even value from head of list. If the first node has an odd value, then wait
+#when the buffer is empty, both should generate a message and wait.
+
     def __init__(self, dblList, name):
         super(Consumer, self).__init__()
         self.dblList = dblList
         self.name = name
 
     def deleteHead(self, node):
-        self.dblList.remove(node)
+        self.dblList.removeHead(node)
 
     def generateMsg(self, name,f):
         msg = "Task completed:"
@@ -147,54 +153,48 @@ class Consumer(threading.Thread):
         self.dblList.show(name,f)
 
     def run(self):
+        name = threading.currentThread().getName()
+        var_lock = threading.Lock()
         while(True):
-            name = threading.currentThread().getName()
-            var_lock = threading.Lock()
             try:
-                var_lock.acquire()
+                var_lock.acquire() #try to acquire a lock on the thread.
                 f = open("sagen_matthew_2.txt", "a")
                 if(name == 'c1'):
                     i = self.getNodeNum()
-                    print("I: ", i)
                     if(i > 0 and i % 2 != 0):
-                        #print("Before c1:")
                         f.write("Before c1:\n")
                         self.showList(name,f)
-                        self.deleteHead(0)
-                        #print("After c1:")
+                        self.deleteHead()
                         f.write("After c1:\n")
                         self.showList(name,f)
                     else:
                         self.generateMsg(name,f)
-                        sys.exit()
+                        #sys.exit()
                         #break;
                 elif(name == 'c2'):
                     i = self.getNodeNum()
                     if(i > 0 and i % 2 == 0):
-                        #print("Before c2:")
                         f.write("Before c2:\n")
                         self.showList(name,f)
-                        self.deleteHead(0)
-                        #print("After c2:")
+                        self.deleteHead()
                         f.write("After c2:\n")
                         self.showList(name,f)
                     else:
                         self.generateMsg(name,f)
-                        sys.exit()
-                        #break;
+                        #sys.exit()
                 f.close()
-                var_lock.release()
+                var_lock.release() #release lock
                 time.sleep(2)
             except:
-                #print(name, '-> Could not acquire Lock.')
                 f.write(name+': Could not acquire Lock.\n')
+                f.write("*"*50+"\n")
                 f.close()
                 time.sleep(2)
 
 class Main():
 
     def main():
-     f = open("sagen_matthew_2.txt", "w")
+     f = open("sagen_matthew_2.txt", "w") #create new output file for each new run of program
      f.write("Starting threads...\n")
      f.write("*"*50+"\n")
      f.close()
@@ -204,22 +204,13 @@ class Main():
          randomNum = random.randint(0,49)
          d.append(randomNum)
          i = i + 1
-     #d.show('Init')
-     counter = 3
-     p1 = Producer(d, name='p1')
+     p1 = Producer(d, name='p1') #create producer1 and producer2
      p2 = Producer(d, name='p2')
-     c1 = Consumer(d, name='c1')
+     c1 = Consumer(d, name='c1') #create Consumer1 and consumer2
      c2 = Consumer(d, name='c2')
-     p1.start()
+     p1.start() #start the four threads
      p2.start()
      c1.start()
      c2.start()
 
-     #Producer #1: generate a node, add to end of the linked list with odd random int
-     #Producer #2: generate a node, add to end of the linked list with even random int
-     #When the buffer is full, both should generate a message and wait.
-
-     #Consumer1: delete the first node with odd value from head of list. If the first node has an even value, then wait
-     #Consumer2: delete the first node with even value from head of list. If the first node has an odd value, then wait
-     #when the buffer is empty, both should generate a message and wait.
     main()
