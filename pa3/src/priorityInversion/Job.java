@@ -75,7 +75,4 @@ public class Job {
 	public void closeWriter() {
 		writer.close();
 	}
-	public void doEnd() {
-		writer.println("Job " + jobId + " is ending.");
-	}
 }

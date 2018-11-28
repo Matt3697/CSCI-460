@@ -20,25 +20,21 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Sagen_Matthew {
 	
 
-	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
+	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException{
 		
 		ArrayList<Job> jobs = get_inputFileJobArray();
 		ArrayList<Job> jobQueue = new ArrayList<Job>();
 		int[] sharedBuffer = {0,0,0}; // T1 shares a small buffer of length 3 with T3, with an initial value of < 0, 0, 0 > at time 0.
 		int time = 0; 				 // variable to simulate system time
 		
-		for(Job job: jobs) {//start all of the job threads, and add each job into a queue
-	    		try {
-	    			jobQueue.add(job);
-	        }
-	        catch(Exception e) { 
-	            System.out.println ("Exception is caught"); 
-	        } 
+		for(Job job: jobs) {//add each job into a queue
+			jobQueue.add(job); 
 		}
+		
 		System.out.println("Starting jobs...");
+		
         for(int i = 0; i < 50; i++) {//this loop simulates system time, from 0 to 50ms.
         		if(jobQueue.size() > 0 && i == jobQueue.get(0).getArrivalTime()) {//if the current time = the arrival time of a job, perform that job.
-        		         //get the job that is supposed to run at this time slice, and make it do its job.
             			/*
             			 * 1 3 --> run from time 1 to 4 and print T3:333:T3
             			 * 3 2 --> run from time 3 to time 13 and print T2:NNNNNNNNNN:T2
@@ -53,27 +49,27 @@ public class Sagen_Matthew {
             			 *                         j4-------|        <--should not preempt j3, even though it has higher priority because of shared buffer
             			 *                               j5----------------------------|
             			 */
+        				//get the job that is supposed to run at this time slice, and make it do its job.
             			if(jobQueue.get(0).getPriorityLevel() == 1) {//level 1 has highest priority 
+            				jobQueue.get(0).doJob(sharedBuffer, time);
             				
             			}
             			else if(jobQueue.get(0).getPriorityLevel() == 2) {
-            				
+            				jobQueue.get(0).doJob(sharedBuffer, time);
             			}
-            			else {//priority level is 3
-            				
+            			else if(jobQueue.get(0).getPriorityLevel() == 3){//priority level is 3
+            				jobQueue.get(0).doJob(sharedBuffer, time);
             			}
-            			jobQueue.get(0).doJob(sharedBuffer, time);
             			time += jobQueue.get(0).getRunTime();
             			jobQueue.remove(0);//remove the first job, and shift the remaining jobs to the left by 1.
+            			
                 }
         		else {
         			time++;
         		}
         }
         
-        for (int i = 0; i < jobs.size(); i++) {//loop through the list of jobs and end their threads.
-        		System.out.println("Job " + jobs.get(i).getJobId() + " is ending.");
-        		jobs.get(i).doEnd();
+        for (int i = 0; i < jobs.size(); i++) {//close the writer. probably change this
 			if(i == jobs.size() - 1) {
 				jobs.get(i).closeWriter();
 			}	
