@@ -15,7 +15,7 @@ import java.util.Scanner;
  * Program takes no arguments from standard input. Data is read into memory from src/priorityInversion/input.txt
  * To run this program, simply run this file as a java application.
  * The output will be located in src/priorityInversion/Sagen_Matthew.txt, program also outputs to standard out.
- * To change how long the program runs, change the variable, upperTimeBound, to desired time in ms.
+ * To change how long the program runs, change the upperTimeBound variable to desired time in ms.
  */
 public class Sagen_Matthew {
 	
@@ -35,7 +35,7 @@ public class Sagen_Matthew {
 		
 		System.out.println("Starting jobs...");
 		writer.println("Starting jobs...");
-		Job current = jobQueue.get(0);
+		Job current = jobQueue.get(0); //start program with first job in the jobQueue, since jobs are already ordered by earliest arrival time first.
 		int jobTimeCounter = 0;
 		
         for(int i = 0; i < upperTimeBound; i++) {//this loop simulates system time, from 0 to 50ms or upperTimeBound.
@@ -113,12 +113,10 @@ public class Sagen_Matthew {
         }
         
         int x = 0;
-        int i = 0;
         while(x < input.size()) {	//create new jobs using input and add them to jobs list.
-        		Job newJob = new Job(i, input.get(x), input.get(x + 1));
+        		Job newJob = new Job(input.get(x), input.get(x + 1));
         		jobs.add(newJob);
         		x += 2;
-        		i++;
         }
         return jobs;
 	}
