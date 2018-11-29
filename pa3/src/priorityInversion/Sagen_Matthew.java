@@ -6,8 +6,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+
 
 /*
  * Author: Matthew Sagen
@@ -16,6 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * Program takes no arguments from standard input. Data is read into memory from src/priorityInversion/input.txt
  * To run this program, simply run this file as a java application.
  * The output will be located in src/priorityInversion/Sagen_Matthew.txt
+ * To change how long the program runs, change the variable, upperTimeBound, to desired time in ms.
  */
 public class Sagen_Matthew {
 	
@@ -26,43 +26,99 @@ public class Sagen_Matthew {
 		ArrayList<Job> jobQueue = new ArrayList<Job>();
 		int[] sharedBuffer = {0,0,0}; // T1 shares a small buffer of length 3 with T3, with an initial value of < 0, 0, 0 > at time 0.
 		int time = 0; 				 // variable to simulate system time
-		
+		int upperTimeBound = 50;
 		for(Job job: jobs) {//add each job into a queue
 			jobQueue.add(job); 
 		}
 		
 		System.out.println("Starting jobs...");
+		Job prev = null;
+		Job current = jobQueue.get(0);
+		jobQueue.remove(0);
+		int jobTimeCounter = 0;
 		
-        for(int i = 0; i < 50; i++) {//this loop simulates system time, from 0 to 50ms.
-        		if(jobQueue.size() > 0 && i == jobQueue.get(0).getArrivalTime()) {//if the current time = the arrival time of a job, perform that job.
-            			/*
-            			 * 1 3 --> run from time 1 to 4 and print T3:333:T3
-            			 * 3 2 --> run from time 3 to time 13 and print T2:NNNNNNNNNN:T2
-            			 * 6 3 --> run from time 6 to time 9 and print T3:333:T3
-            			 * 8 1 --> run from time 8 to time 11 and print T1:111:T1
-            			 * 10 2 --> run from time 10 to time 20 print T2:NNNNNNNNNN:T2
-            			 * |--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|
-            			 * 0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
-            			 *    j1-------|                             <--FCFS
-            			 *          j2----------------------------|  <--should preempt j1, j1 has priority 3, j2 has priority 2
-            			 *                   j3-------|              <--should wait for j2 to finish
-            			 *                         j4-------|        <--should not preempt j3, even though it has higher priority because of shared buffer
-            			 *                               j5----------------------------|
-            			 */
-        				//get the job that is supposed to run at this time slice, and make it do its job.
-            			if(jobQueue.get(0).getPriorityLevel() == 1) {//level 1 has highest priority 
-            				jobQueue.get(0).doJob(sharedBuffer, time);
-            				
-            			}
-            			else if(jobQueue.get(0).getPriorityLevel() == 2) {
-            				jobQueue.get(0).doJob(sharedBuffer, time);
-            			}
-            			else if(jobQueue.get(0).getPriorityLevel() == 3){//priority level is 3
-            				jobQueue.get(0).doJob(sharedBuffer, time);
-            			}
-            			time += jobQueue.get(0).getRunTime();
-            			jobQueue.remove(0);//remove the first job, and shift the remaining jobs to the left by 1.
+		/* Arrival time | priority level
+		 * 1 3 --> run from time 1 to 4 and print T3:333:T3
+		 * 3 2 --> run from time 3 to time 13 and print T2:NNNNNNNNNN:T2
+		 * 6 3 --> run from time 6 to time 9 and print T3:333:T3
+		 * 8 1 --> run from time 8 to time 11 and print T1:111:T1
+		 * 10 2 --> run from time 10 to time 20 print T2:NNNNNNNNNN:T2
+		 * |--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|
+		 * 0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
+		 *    j1-------|                             <--FCFS
+		 *          j2----------------------------|  <--should preempt j1, j1 has priority 3, j2 has priority 2
+		 *                   j3-------|              <--should wait for j2 to finish
+		 *                         j4-------|        <--should not preempt j3, even though it has higher priority because of shared buffer
+		 *                               j5----------------------------|
+		 */
+	
+        for(int i = 0; i < upperTimeBound; i++) {//this loop simulates system time, from 0 to 50ms.
+        		//if the current time=the arrival time of a job, perform that job.
+        		if(jobQueue.size() > 0 && i == current.getArrivalTime() || current.isRunning()) {
             			
+        				if(!current.isRunning()) {//if the job is not running, print the current time, and the job description
+        					if(current.getPriorityLevel() == 1) {
+        						System.out.print("time " + time + ", T\u2081"); //\u2081 is unicode for subscript of 3
+        					}
+        					else if(current.getPriorityLevel() == 2) {
+        						System.out.print("time " + time + ", T\u2082");
+        					}
+        					else if(current.getPriorityLevel() == 3) {
+        						System.out.print("time " + time + ", T\u2083");
+        					}
+        					current.setRunning(true);
+        				}
+        				
+        			    if(prev != null && current.canPreempt(prev)) {
+        			    		//stop working on the previous job and start the next job.
+        			    	    prev.setRunning(false);
+        			    	    current = jobQueue.get(0);
+        			    	    jobQueue.remove(0);
+        			    		current.doJob(sharedBuffer, time);
+        			    }
+        			        
+            			if(current.getPriorityLevel() == 1) {//level 1 has highest priority 
+            				jobQueue.get(0).doJob(sharedBuffer, time);
+            				if(jobTimeCounter < jobQueue.get(0).getRunTime()) {
+            					System.out.print("1");
+            				}
+            				else {
+            					System.out.print("T\u2081");
+            					current.setRunning(false);
+            					prev = current;
+            					current = jobQueue.get(0);
+            					jobQueue.remove(0);
+            				}
+            				jobTimeCounter++;
+            			}
+            			else if(current.getPriorityLevel() == 2) {
+            				current.doJob(sharedBuffer, time);
+            				if(jobTimeCounter < current.getRunTime()) {
+            					System.out.print("2");
+            				}
+            				else {
+            					System.out.print("T\u2082");
+            					current.setRunning(false);
+            					prev = current;
+            					current = jobQueue.get(0);
+            					jobQueue.remove(0);
+            				}
+            				jobTimeCounter++;
+            			}
+            			else if(current.getPriorityLevel() == 3){//priority level is 3
+            				current.doJob(sharedBuffer, time);
+            				if(jobTimeCounter < current.getRunTime()) {
+            					System.out.print("3");
+            				}
+            				else {
+            					System.out.print("T\u2083");
+            					current.setRunning(false);
+            					prev = current;
+            					current = jobQueue.get(0);
+            					jobQueue.remove(0);
+            				}
+            				jobTimeCounter++;
+            			}			
                 }
         		else {
         			time++;

@@ -1,7 +1,0 @@
-time 1, T3:333:T3
-time 5, T2NNNNNNNNNNT2
-time 17, T3:333:T3
-time 21, T1:111:T1
-time 25, T2NNNNNNNNNNT2
-time 36, T3:333:T3
-time 52, T1:111:T1

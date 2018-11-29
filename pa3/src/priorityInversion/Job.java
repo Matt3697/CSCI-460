@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 public class Job {
 	public int jobId, arrivalTime, priorityLevel, runTime;
 	public PrintWriter writer;
+	public boolean running;
 	
 	public Job(int jobId, int arrivalTime, int priorityLevel,  PrintWriter writer) {
 		this.arrivalTime = arrivalTime;
@@ -35,7 +36,7 @@ public class Job {
 	
 	
 	public void doJob(int[] sharedBuffer, int time){
-		
+		/*
 		if(priorityLevel == 1 || priorityLevel == 3) {
 			sharedBuffer = changeArray(sharedBuffer);
 			System.out.print("time " + time + ", T" + priorityLevel + ":");
@@ -58,7 +59,14 @@ public class Job {
 			System.out.print("T" + priorityLevel + "\n");
 			writer.print("T" + priorityLevel + "\n");
 		}
+		*/
 		
+	}
+	public void setRunning(boolean flag) {
+		running = flag;
+	}
+	public boolean isRunning() {
+		return running;
 	}
 	public int getJobId() {
 		return jobId;
@@ -74,5 +82,14 @@ public class Job {
 	}
 	public void closeWriter() {
 		writer.close();
+	}
+
+	public boolean canPreempt(Job prev) {
+		if(priorityLevel > prev.getPriorityLevel() && (priorityLevel != 1 && prev.getPriorityLevel() != 3)) {//higher number = higher priority && 1 can't preempt 3
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 }
