@@ -8,15 +8,24 @@ import java.io.PrintWriter;
 * Programming Assignment 3: Priority Inversion
 */
 public class Job {
-	public int jobId, arrivalTime, priorityLevel, runTime;
+	public int jobId, arrivalTime, priorityLevel, runTime, tj;
 	public PrintWriter writer;
-	public boolean running;
+	public boolean running, complete, waiting;
 	
-	public Job(int jobId, int arrivalTime, int priorityLevel,  PrintWriter writer) {
+	public Job(int jobId, int arrivalTime, int tj,  PrintWriter writer) {
 		this.arrivalTime = arrivalTime;
-		this.priorityLevel = priorityLevel;
 		this.jobId = jobId;
 		this.writer = writer;
+		this.tj = tj;
+		if(tj == 1) {
+			this.priorityLevel = 3;
+		}
+		else if(tj == 2) {
+			this.priorityLevel = 2;
+		}
+		else if(tj == 3) {
+			this.priorityLevel = 1;
+		}
 		if(priorityLevel == 1 || priorityLevel == 3) {
 			this.runTime = 3;
 		}
@@ -28,9 +37,8 @@ public class Job {
 	public int[] changeArray(int[] sharedBuffer) {
 		//convert the contents of the sharedBuffer to either 1's or 3's
 		for(int i = 0; i < sharedBuffer.length; i++) {
-			sharedBuffer[i] = priorityLevel;
+			sharedBuffer[i] = tj;
 		}
-		
 		return sharedBuffer;
 	}
 	
@@ -38,15 +46,26 @@ public class Job {
 	public void doJob(int[] sharedBuffer, int time){
 		if(priorityLevel == 1 || priorityLevel == 3) {
 			sharedBuffer = changeArray(sharedBuffer);
-			System.out.print(priorityLevel);
+			//for(int i = 0; i < sharedBuffer.length; i++) {
+				System.out.print(tj);
+			//}
 		}
 		
 		else {
 			System.out.print("N");
 		}
-		
-		
 	}
+    public void finishJob() {
+    		if(tj == 1) {
+    			System.out.print("T\u2081\n");
+    		}
+    		else if(tj == 2) {
+    			System.out.print("T\u2082\n");
+    		}
+    		else if(tj == 3) {
+    			System.out.print("T\u2083\n");
+    		}
+    }
 	public void setRunning(boolean flag) {
 		running = flag;
 	}
@@ -68,7 +87,21 @@ public class Job {
 	public void closeWriter() {
 		writer.close();
 	}
-
+	public int getTj() {
+		return tj;
+	}
+	public void setComplete() {
+		complete = true;
+	}
+	public boolean isComplete() {
+		return complete;
+	}
+	public void setWaiting() {
+		waiting = true;
+	}
+	public boolean isWaiting() {
+		return waiting;
+	}
 	public boolean canPreempt(Job prev) {
 		if(priorityLevel > prev.getPriorityLevel() && (priorityLevel != 1 && prev.getPriorityLevel() != 3)) {//higher number = higher priority && 1 can't preempt 3
 			return true;

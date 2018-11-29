@@ -24,18 +24,13 @@ public class Sagen_Matthew {
 		
 		ArrayList<Job> jobs = get_inputFileJobArray();
 		ArrayList<Job> jobQueue = new ArrayList<Job>();
+		ArrayList<Job> waitQueue = new ArrayList<Job>();
 		int[] sharedBuffer = {0,0,0}; // T1 shares a small buffer of length 3 with T3, with an initial value of < 0, 0, 0 > at time 0.
 		int time = 0; 				 // variable to simulate system time
 		int upperTimeBound = 50;
 		for(Job job: jobs) {//add each job into a queue
 			jobQueue.add(job); 
 		}
-		
-		System.out.println("Starting jobs...");
-		Job prev = null;
-		Job current = jobQueue.get(0);
-		jobQueue.remove(0);
-		int jobTimeCounter = 0;
 		
 		/* Arrival time | priority level
 		 * 1 3 --> run from time 1 to 4 and print T3:333:T3
@@ -51,79 +46,85 @@ public class Sagen_Matthew {
 		 *                         j4-------|        <--should not preempt j3, even though it has higher priority because of shared buffer
 		 *                               j5----------------------------|
 		 */
-	
-        for(int i = 0; i < upperTimeBound; i++) {//this loop simulates system time, from 0 to 50ms.
-        		//if the current time=the arrival time of a job, perform that job.
-        		if(jobQueue.size() > 0 && i == current.getArrivalTime() || current.isRunning()) {
-            			
-        				if(!current.isRunning()) {//if the job is not running, print the current time, and the job description
-        					if(current.getPriorityLevel() == 1) {
-        						System.out.print("time " + time + ", T\u2081"); //\u2081 is to subscript 3
-        					}
-        					else if(current.getPriorityLevel() == 2) {
-        						System.out.print("time " + time + ", T\u2082");
-        					}
-        					else if(current.getPriorityLevel() == 3) {
-        						System.out.print("time " + time + ", T\u2083");
-        					}
-        					current.setRunning(true);
-        				}
-        				
-        			    if(prev != null && current.canPreempt(prev)) {
-        			    		//stop working on the previous job and start the next job.
-        			    	    prev.setRunning(false);
-        			    	    current = jobQueue.get(0);
-        			    	    jobQueue.remove(0);
-        			    		current.doJob(sharedBuffer, time);
-        			    }
-        			        
-            			if(current.getPriorityLevel() == 1) {//level 1 has highest priority 
-            				if(jobTimeCounter < jobQueue.get(0).getRunTime()) {
+		
+		System.out.println("Starting jobs...");
+		Job current = jobQueue.get(0);
+		int jobTimeCounter = 0;
+		
+        for(int i = 0; i < upperTimeBound; i++) {//this loop simulates system time, from 0 to 50ms or upperTimeBound.
+        		//if the current time=the arrival time of a job, try to perform that job.
+        		
+        		for(Job job : jobQueue) {
+        			if(i > jobQueue.get(0).getArrivalTime() && job.getArrivalTime() == i && job.canPreempt(current)) {
+        				current.setRunning(false);
+        				current.finishJob();
+			    	    current = job;  		
+        			}
+        			else if(i == job.getArrivalTime() && !job.canPreempt(current)) {//if the job can't preempt, put it in a queue to run later.
+        				waitQueue.add(job);
+        				job.setWaiting();
+        				//System.out.println(job.getArrivalTime() + " " + current.isWaiting() + !current.isRunning() + !current.isComplete());
+        			}
+        		}
+        		if(waitQueue.size() > 0 && !current.isRunning()) {
+        			current = waitQueue.get(0);
+        			waitQueue.remove(0);
+        		}
+        		if((i == current.getArrivalTime() || current.isWaiting()) && !current.isRunning() && !current.isComplete()) {//if the job is not running, print the current time, and the job description
+					if(current.getTj() == 1) {
+						System.out.print("time " + time + ", T\u2081"); //\u2081 is to subscript 3
+					}
+					else if(current.getTj() == 2) {
+						System.out.print("time " + time + ", T\u2082");
+					}
+					else if(current.getTj() == 3) {
+						System.out.print("time " + time + ", T\u2083");
+					}
+					current.setRunning(true);
+				}
+        		if(current.isRunning()) {       
+            			if(current.getTj() == 1) { 
+            				if(jobTimeCounter < jobQueue.get(0).getRunTime() - 1) {//if it is T1
             					current.doJob(sharedBuffer, time);
             				}
             				else {
-            					System.out.print("T\u2081");
+            					current.doJob(sharedBuffer, time);
+            					System.out.print("T\u2081\n");
             					current.setRunning(false);
-            					prev = current;
-            					current = jobQueue.get(0);
-            					jobQueue.remove(0);
-            					jobTimeCounter = 0;
+            					current.setComplete();
+            					jobTimeCounter = -1;	
             				}
             				jobTimeCounter++;
             			}
-            			else if(current.getPriorityLevel() == 2) {
+            			else if(current.getTj() == 2) {//if it is T2
             				
-            				if(jobTimeCounter < current.getRunTime()) {
-            					current.doJob(sharedBuffer, time);            				}
-            				else {
-            					System.out.print("T\u2082");
-            					current.setRunning(false);
-            					prev = current;
-            					current = jobQueue.get(0);
-            					jobQueue.remove(0);
-            					jobTimeCounter = 0;
-            				}
-            				jobTimeCounter++;
-            			}
-            			else if(current.getPriorityLevel() == 3){//priority level is 3
-            				
-            				if(jobTimeCounter < current.getRunTime()) {
+            				if(jobTimeCounter < current.getRunTime() - 1) {
             					current.doJob(sharedBuffer, time);
             				}
             				else {
-            					System.out.print("T\u2083");
+            					current.doJob(sharedBuffer, time);
+            					System.out.print("T\u2082\n");
             					current.setRunning(false);
-            					prev = current;
-            					current = jobQueue.get(0);
-            					jobQueue.remove(0);
-            					jobTimeCounter = 0;
+            					current.setComplete();
+            					jobTimeCounter = -1;
+            				}
+            				jobTimeCounter++;
+            			}
+            			else if(current.getTj() == 3){//T3
+            				if(jobTimeCounter < current.getRunTime() - 1) {
+            					current.doJob(sharedBuffer, time);        					
+            				}
+            				else {
+            					current.doJob(sharedBuffer, time);
+            					System.out.print("T\u2083\n");
+            					current.setRunning(false);
+            					current.setComplete();
+            					jobTimeCounter = -1;
             				}
             				jobTimeCounter++;
             			}			
                 }
-        		else {
-        			time++;
-        		}
+    			time++;
         }
         
         for (int i = 0; i < jobs.size(); i++) {//close the writer. probably change this
