@@ -58,7 +58,7 @@ public class Sagen_Matthew {
             			
         				if(!current.isRunning()) {//if the job is not running, print the current time, and the job description
         					if(current.getPriorityLevel() == 1) {
-        						System.out.print("time " + time + ", T\u2081"); //\u2081 is unicode for subscript of 3
+        						System.out.print("time " + time + ", T\u2081"); //\u2081 is to subscript 3
         					}
         					else if(current.getPriorityLevel() == 2) {
         						System.out.print("time " + time + ", T\u2082");
@@ -78,9 +78,8 @@ public class Sagen_Matthew {
         			    }
         			        
             			if(current.getPriorityLevel() == 1) {//level 1 has highest priority 
-            				jobQueue.get(0).doJob(sharedBuffer, time);
             				if(jobTimeCounter < jobQueue.get(0).getRunTime()) {
-            					System.out.print("1");
+            					current.doJob(sharedBuffer, time);
             				}
             				else {
             					System.out.print("T\u2081");
@@ -88,27 +87,28 @@ public class Sagen_Matthew {
             					prev = current;
             					current = jobQueue.get(0);
             					jobQueue.remove(0);
+            					jobTimeCounter = 0;
             				}
             				jobTimeCounter++;
             			}
             			else if(current.getPriorityLevel() == 2) {
-            				current.doJob(sharedBuffer, time);
+            				
             				if(jobTimeCounter < current.getRunTime()) {
-            					System.out.print("2");
-            				}
+            					current.doJob(sharedBuffer, time);            				}
             				else {
             					System.out.print("T\u2082");
             					current.setRunning(false);
             					prev = current;
             					current = jobQueue.get(0);
             					jobQueue.remove(0);
+            					jobTimeCounter = 0;
             				}
             				jobTimeCounter++;
             			}
             			else if(current.getPriorityLevel() == 3){//priority level is 3
-            				current.doJob(sharedBuffer, time);
+            				
             				if(jobTimeCounter < current.getRunTime()) {
-            					System.out.print("3");
+            					current.doJob(sharedBuffer, time);
             				}
             				else {
             					System.out.print("T\u2083");
@@ -116,6 +116,7 @@ public class Sagen_Matthew {
             					prev = current;
             					current = jobQueue.get(0);
             					jobQueue.remove(0);
+            					jobTimeCounter = 0;
             				}
             				jobTimeCounter++;
             			}			

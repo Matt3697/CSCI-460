@@ -36,30 +36,15 @@ public class Job {
 	
 	
 	public void doJob(int[] sharedBuffer, int time){
-		/*
 		if(priorityLevel == 1 || priorityLevel == 3) {
 			sharedBuffer = changeArray(sharedBuffer);
-			System.out.print("time " + time + ", T" + priorityLevel + ":");
-			writer.print("time " + time + ", T" + priorityLevel + ":");
-			for(int i = 0; i < sharedBuffer.length; i++) {
-				System.out.print(sharedBuffer[i]);
-				writer.print(sharedBuffer[i]);
-			}
-			System.out.print(":T" + priorityLevel + "\n");
-			writer.print(":T" + priorityLevel + "\n");
+			System.out.print(priorityLevel);
 		}
 		
 		else {
-			System.out.print("time " + time + ", T" + priorityLevel);
-			writer.print("time " + time + ", T" + priorityLevel);
-			for(int i = 0; i < runTime; i++) {
-				System.out.print("N");
-				writer.print("N");
-			}
-			System.out.print("T" + priorityLevel + "\n");
-			writer.print("T" + priorityLevel + "\n");
+			System.out.print("N");
 		}
-		*/
+		
 		
 	}
 	public void setRunning(boolean flag) {
