@@ -41,7 +41,7 @@ public class Sagen_Matthew {
         for(int i = 0; i < upperTimeBound; i++) {//this loop simulates system time, from 0 to 50ms or upperTimeBound.
         		//loop through list of jobs. if the current time equals the arrival time of a job, try to perform that job.
         		for(Job job : jobQueue) {
-        			if(i > jobQueue.get(0).getArrivalTime() && job.getArrivalTime() == i && job.canPreempt(current)) {//if the job can preempt the current job
+        			if(job.getArrivalTime() == i && job.canPreempt(current)) {//if the job can preempt the current job
         				current.setRunning(false);
         				if(!current.isComplete()) {//cut off the current job
         					current.finishJob(writer);

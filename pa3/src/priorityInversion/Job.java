@@ -99,11 +99,15 @@ public class Job {
 	public boolean isWaiting() {//return whether or not a job is currently waiting.
 		return waiting;
 	}
-	public boolean canPreempt(Job prev) {//returns whether or not prev can be preempted.
+	public boolean canPreempt(Job prev) {//returns whether or not prev can be preempted. if t3.canPreempt(t2)
 		//higher number = higher priority && 1 can't preempt 3
 		//if this jobs priority level is greater than the job in question, and this job is not of priority 1 and the job in quesiton not priority 3.
 		//then the job in questions can be preempted. Otherwise not.
-		if(priorityLevel > prev.getPriorityLevel() && (priorityLevel != 1 && prev.getPriorityLevel() != 3)) {
+		//T3 can't preempt T2
+		//T1 can't preempt T3
+		//T2 can't preempt T1
+		//P(T3) = 1 < P(T2) = 2 < P(T1) = 3
+		if(priorityLevel > prev.getPriorityLevel() && (priorityLevel != 1 && prev.getPriorityLevel() != 1)) {
 			return true;
 		}
 		else {
