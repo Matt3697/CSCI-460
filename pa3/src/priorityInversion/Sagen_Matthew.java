@@ -57,13 +57,14 @@ public class Sagen_Matthew {
         		for(Job job : jobQueue) {
         			if(i > jobQueue.get(0).getArrivalTime() && job.getArrivalTime() == i && job.canPreempt(current)) {
         				current.setRunning(false);
-        				current.finishJob();
+        				if(!current.isComplete()) {
+        					current.finishJob();
+        				}
 			    	    current = job;  		
         			}
         			else if(i == job.getArrivalTime() && !job.canPreempt(current)) {//if the job can't preempt, put it in a queue to run later.
         				waitQueue.add(job);
         				job.setWaiting();
-        				//System.out.println(job.getArrivalTime() + " " + current.isWaiting() + !current.isRunning() + !current.isComplete());
         			}
         		}
         		if(waitQueue.size() > 0 && !current.isRunning()) {

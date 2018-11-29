@@ -26,10 +26,10 @@ public class Job {
 		else if(tj == 3) {
 			this.priorityLevel = 1;
 		}
-		if(priorityLevel == 1 || priorityLevel == 3) {
+		if(tj == 1 || tj == 3) {
 			this.runTime = 3;
 		}
-		else {
+		else if (tj == 2){
 			this.runTime = 10;
 		}
 	}
@@ -46,9 +46,7 @@ public class Job {
 	public void doJob(int[] sharedBuffer, int time){
 		if(priorityLevel == 1 || priorityLevel == 3) {
 			sharedBuffer = changeArray(sharedBuffer);
-			//for(int i = 0; i < sharedBuffer.length; i++) {
-				System.out.print(tj);
-			//}
+			System.out.print(tj);
 		}
 		
 		else {
