@@ -14,7 +14,7 @@ import java.util.Scanner;
  * Programming Assignment 3: Priority Inversion
  * Program takes no arguments from standard input. Data is read into memory from src/priorityInversion/input.txt
  * To run this program, simply run this file as a java application.
- * The output will be located in src/priorityInversion/Sagen_Matthew.txt
+ * The output will be located in src/priorityInversion/Sagen_Matthew.txt, program also outputs to standard out.
  * To change how long the program runs, change the variable, upperTimeBound, to desired time in ms.
  */
 public class Sagen_Matthew {
@@ -27,8 +27,8 @@ public class Sagen_Matthew {
 		ArrayList<Job> waitQueue = new ArrayList<Job>();
 		int[] sharedBuffer = {0,0,0}; // T1 shares a small buffer of length 3 with T3, with an initial value of < 0, 0, 0 > at time 0.
 		int time = 0; 				 // variable to simulate system time
-		int upperTimeBound = 50;		 //arbitrary upperTimeBound, ideally at least 10ms higher than highest arrival time for jobs.
-		for(Job job: jobs) {			 //add each job into a queue
+		int upperTimeBound = 50;		 // arbitrary upperTimeBound, ideally at least 10ms higher than highest arrival time for jobs.
+		for(Job job: jobs) {			 // add each job into a queue
 			jobQueue.add(job); 
 		}
 		PrintWriter writer = new PrintWriter("src/priorityInversion/Sagen_Matthew.txt", "UTF-8"); //this is used to print to output file
