@@ -12,10 +12,9 @@ public class Job {
 	public PrintWriter writer;
 	public boolean running, complete, waiting;
 	
-	public Job(int jobId, int arrivalTime, int tj,  PrintWriter writer) {
+	public Job(int jobId, int arrivalTime, int tj) {
 		this.arrivalTime = arrivalTime;
 		this.jobId = jobId;
-		this.writer = writer;
 		this.tj = tj;
 		if(tj == 1) {
 			this.priorityLevel = 3;
@@ -43,25 +42,30 @@ public class Job {
 	}
 	
 	
-	public void doJob(int[] sharedBuffer, int time){
+	public void doJob(int[] sharedBuffer, int time, PrintWriter writer){
 		if(priorityLevel == 1 || priorityLevel == 3) {
 			sharedBuffer = changeArray(sharedBuffer);
 			System.out.print(tj);
+			writer.print(tj);
 		}
 		
 		else {
+			writer.print("N");
 			System.out.print("N");
 		}
 	}
-    public void finishJob() {
+    public void finishJob(PrintWriter writer) {
     		if(tj == 1) {
     			System.out.print("T\u2081\n");
+    			writer.print("T\u2081\n");
     		}
     		else if(tj == 2) {
     			System.out.print("T\u2082\n");
+    			writer.print("T\u2082\n");
     		}
     		else if(tj == 3) {
     			System.out.print("T\u2083\n");
+    			writer.print("T\u2083\n");
     		}
     }
 	public void setRunning(boolean flag) {
@@ -81,9 +85,6 @@ public class Job {
 	}
 	public int getRunTime() {
 		return runTime;
-	}
-	public void closeWriter() {
-		writer.close();
 	}
 	public int getTj() {
 		return tj;
