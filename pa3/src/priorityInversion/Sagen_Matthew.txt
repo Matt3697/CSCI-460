@@ -1,0 +1,9 @@
+Starting jobs...
+time 1, T₃333T₃
+time 4, T₂NNNNT₂
+time 8, T₁111T₁
+time 11, T₃333T₃
+time 14, T₂NNNNNNNNNNT₂
+time 24, T₃333T₃
+time 27, T₁111T₁
+Finished.
