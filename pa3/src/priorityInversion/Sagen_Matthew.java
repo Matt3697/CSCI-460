@@ -45,8 +45,11 @@ public class Sagen_Matthew {
         				current.setRunning(false);
         				if(!current.isComplete()) {//cut off the current job
         					current.finishJob(writer);
+        					jobTimeCounter = 0;
         				}
+        				System.out.println("T" + job.getTj() + " is preempting " + "T" + current.getTj());
 			    	    current = job;  //set the new current job.
+			    	    waitQueue.add(0, current);
         			}
         			else if(i == job.getArrivalTime() && !job.canPreempt(current)) {//if the job can't preempt, put it in a queue to run later as FCFS.
         				waitQueue.add(job);
